@@ -20,10 +20,11 @@ public class BulbBinarySearch {
         int bulbArray[];
         bulbArray = new int[arraySize];
         for (int i = 0; i < arraySize; i++) {
+  
             tempString = br.readLine();
+            if(tempString.isEmpty()) {System.out.println("Space in text file."); br.close(); return;}
             bulbArray[i] = Integer.parseInt(tempString);
         }
-        
         //if number of bulbs in array exceeds indicated array size
         if (br.readLine() !=null) {
             System.out.println("Too many bulbs for indicated array size.");
