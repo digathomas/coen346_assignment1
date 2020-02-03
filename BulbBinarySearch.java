@@ -10,7 +10,7 @@ public class BulbBinarySearch {
         // =====================================================
         // change the path to your corresponding Input.txt file
         // =====================================================
-        File file = new File("C:\\Users\\etothra\\Workspace\\coen346_assignment1\\Input.txt");
+        File file = new File("/Users/nadiranusratrouf/Documents/COEN346_Assignment1/coen346_assignment1/Input.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String tempString = null;
 
@@ -23,7 +23,23 @@ public class BulbBinarySearch {
             tempString = br.readLine();
             bulbArray[i] = Integer.parseInt(tempString);
         }
+        
+        //if number of bulbs in array exceeds indicated array size
+        if (br.readLine() !=null) {
+            System.out.println("Too many bulbs for indicated array size.");
+            br.close();
+            return;
+
+        }
         br.close();
+
+        //check if there exists a value other than 0 or 1 in bulbArray
+        for (int i=0;i<arraySize;i++) {
+            if (bulbArray[i] != 0 && bulbArray[i] !=1) {
+                System.out.println("Bulb value other than 0 or 1 exists in array.");
+                return;
+            }
+        }
 
         // Print out bulbArray to terminal.
         for (int i = 0; i < arraySize; i++) {
@@ -86,6 +102,7 @@ public class BulbBinarySearch {
             System.out.println("no defective bulb");
             return;// make sure
         }
+
         // Case: 0 found isolated.
         else if (subBulbArray.length == 1 && defectiveExists == 0) {
             System.out.println("defective bulb found at position: " + position);
