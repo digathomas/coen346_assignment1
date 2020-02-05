@@ -1,4 +1,4 @@
-public class counter {
+public class Counter {
     int count = 0;
 
     public synchronized int getcount() {

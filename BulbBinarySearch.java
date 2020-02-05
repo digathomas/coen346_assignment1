@@ -1,43 +1,65 @@
 import java.io.*;
 
-//Write a recursive threading method to find the defective bulbs and the number of threads that have been created for this purpose
-
 public class BulbBinarySearch {
 
     public static void main(String[] args) throws Exception {
 
         // Reading Input.txt file.
         // =====================================================
-        // change the path to your corresponding Input.txt file
+        // change the path to your corresponding Input.txt file.
         // =====================================================
-        File file = new File("/Users/nadiranusratrouf/Documents/COEN346_Assignment1/coen346_assignment1/Input.txt");
+        File file = new File("C:\\Users\\etothra\\Workspace\\coen346_assignment1\\Input.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String tempString = null;
 
         // Initialize array of integers.
+        // Initialize size of array.
         tempString = br.readLine();
         int arraySize = Integer.parseInt(tempString);
         int bulbArray[];
         bulbArray = new int[arraySize];
+        // Handle a non 2^n array.
+        int temp = arraySize;
+        int remainder = 0;
+        while (temp != 1) {
+            remainder = temp % 2;
+            if (remainder != 0) {
+                System.out.println("Error: array not dividable by 2.");
+                br.close();
+                return;
+            }
+            temp /= 2;
+        }
+        // Set values of the array.
         for (int i = 0; i < arraySize; i++) {
-  
             tempString = br.readLine();
-            if(tempString.isEmpty()) {System.out.println("Space in text file."); br.close(); return;}
+            // Handle insufficient bulbs for array size.
+            if (tempString == null) {
+                System.out.println("Error: insufficient bulbs (to indicated array size).");
+                br.close();
+                return;
+            }
+            // Handle line break.
+            if (tempString.isEmpty()) {
+                System.out.println("Error: line break");
+                br.close();
+                return;
+            }
             bulbArray[i] = Integer.parseInt(tempString);
         }
-        //if number of bulbs in array exceeds indicated array size
-        if (br.readLine() !=null) {
-            System.out.println("Too many bulbs for indicated array size.");
+        // Handle excessive bulbs for array size.
+        if (br.readLine() != null) {
+            System.out.println("Error: excessive bulbs (to indicated array size).");
             br.close();
             return;
-
         }
         br.close();
+        // End of .txt file read.
 
-        //check if there exists a value other than 0 or 1 in bulbArray
-        for (int i=0;i<arraySize;i++) {
-            if (bulbArray[i] != 0 && bulbArray[i] !=1) {
-                System.out.println("Bulb value other than 0 or 1 exists in array.");
+        // Handle undefined values (bulbs other than 0 or 1).
+        for (int i = 0; i < arraySize; i++) {
+            if (bulbArray[i] != 0 && bulbArray[i] != 1) {
+                System.out.println("Error: undefined value (not 0 nor 1).");
                 return;
             }
         }
@@ -47,17 +69,17 @@ public class BulbBinarySearch {
             System.out.println("In bulbArray[" + i + "]: " + bulbArray[i]);
         }
 
-        counter c1 = new counter();
-        counter c2 = new counter();
-
-        // Run FindDefective recursion method to find 0s.
+        // Instantiate counters c1 and c2
+        Counter numThread = new Counter();
+        Counter c2 = new Counter();
+        // Instantiate positionArray. Keeps track of position of defective bulbs.
         int positionArray[] = new int[arraySize];
 
-        // positionArray =
+        // Start main thread.
         Thread mainT = new Thread(new Runnable() {
             public void run() {
-                FindDefective(positionArray, bulbArray, 0, c1, c2);
-                c1.increment();
+                FindDefective(positionArray, bulbArray, 0, numThread, c2);
+                numThread.increment();
 
             }
         });
@@ -68,24 +90,20 @@ public class BulbBinarySearch {
             e.printStackTrace();
         }
 
-        System.out.printf("==============================================\n");
-
         // Print out the positions of defective bulbs (0s).
+        System.out.println("==============================================");
+        System.out.println("OUTPUT");
+        System.out.println("==============================================");
         for (int i = 0; i < c2.getcount(); i++) {
-
+            // Position is off-set by 1 because of example answer.
             System.out.println("Position of defective lightbulb: " + (positionArray[i] + 1));
         }
-        
         // Print out the number of threads used.
-        System.out.println("Number of Threads used: " + c1.getcount());
-
-        System.out.printf("==============================================\n");
+        System.out.println("Number of Threads used: " + numThread.getcount());
+        System.out.println("==============================================");
     }
 
-    // TA instructions:
-    // Assume that the BulbArray is a 2^n, always divisible by 2.
-
-    public static void FindDefective(int[] positionArray, int[] subBulbArray, int position, counter c1, counter c2) {
+    public static void FindDefective(int[] positionArray, int[] subBulbArray, int position, Counter c1, Counter c2) {
 
         // Print the bulbArray being analyzed on terminal.
         for (int i = 0; i < subBulbArray.length; i++) {
@@ -131,7 +149,7 @@ public class BulbBinarySearch {
             });
             leftThread.start();
             System.out.println("start left side");
-            
+
             // Recursion on the right side.
             int[] rightArr = new int[subBulbArray.length - leftArr.length];
             for (int i = 0; i < rightArr.length; i++) {
