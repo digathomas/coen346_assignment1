@@ -103,17 +103,17 @@ public class BulbBinarySearch {
         System.out.println("==============================================");
     }
 
-    public static void FindDefective(int[] positionArray, int[] subBulbArray, int position, Counter c1, Counter c2) {
+    public static void FindDefective(int[] positionArray, int[] subBulbArray, int position, Counter c1, Counter numThread) {
 
         // Print the bulbArray being analyzed on terminal.
         for (int i = 0; i < subBulbArray.length; i++) {
             System.out.println(subBulbArray[i]);
         }
-
         // Find if there is a 0 in sub-array.
         int defectiveExists = 1;
         for (int i = 0; i < subBulbArray.length; i++) {
             defectiveExists *= subBulbArray[i];
+            //if (subBulbArray[i] == 0) {System.out.println("no defective bulb"); return;}
         }
 
         // Case: no 0s in the sub array.
@@ -121,13 +121,13 @@ public class BulbBinarySearch {
             System.out.println("no defective bulb");
             return;// make sure
         }
-
         // Case: 0 found isolated.
         else if (subBulbArray.length == 1 && defectiveExists == 0) {
             System.out.println("defective bulb found at position: " + position);
-            positionArray[c2.getcount()] = position;
-            c2.increment(); // increment counter
-
+            // Set position of defective bulb in positionArray
+            positionArray[numThread.getcount()] = position;
+            // Increment number of threads.
+            numThread.increment();
         }
         // Case: split into sub-arrays.
         else {
@@ -135,45 +135,49 @@ public class BulbBinarySearch {
             System.out.println("splitting array with " + pivot + " as pivot");
 
             // Recursion on the left side.
+            // Instantiate leftArr (copy of left side of mother array).
             int[] leftArr = new int[pivot];
             for (int i = 0; i < leftArr.length; i++) {
                 leftArr[i] = subBulbArray[i];
             }
-
-            // creation of left thread
+            // Creation of left thread.
             Thread leftThread = new Thread(new Runnable() {
                 public void run() {
-                    c1.increment(); // increment counter
-                    FindDefective(positionArray, leftArr, position, c1, c2);
+                    c1.increment(); 
+                    FindDefective(positionArray, leftArr, position, c1, numThread);
                 }
             });
+            // Start of left thread.
             leftThread.start();
-            System.out.println("start left side");
+            System.out.println("Start left side thread");
 
             // Recursion on the right side.
-            int[] rightArr = new int[subBulbArray.length - leftArr.length];
+            // Instatntiate rightArr (copy of right side of mother array).
+            int[] rightArr = new int[pivot];
             for (int i = 0; i < rightArr.length; i++) {
                 rightArr[i] = subBulbArray[i + pivot];
             }
 
-            // creation of right thread
+            // Creation of right thread.
             Thread rightThread = new Thread(new Runnable() {
                 public void run() {
                     c1.increment();
-                    FindDefective(positionArray, rightArr, position + pivot, c1, c2);
+                    FindDefective(positionArray, rightArr, position + pivot, c1, numThread);
                 }
             });
+            // Start of right thread.
             rightThread.start();
-            System.out.println("start right side");
+            System.out.println("Start right side thread");
+            // Join threads together
             try {
                 rightThread.join();
-                System.out.println("end right side");
+                System.out.println("End right side thread");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             try {
                 leftThread.join();
-                System.out.println("end left side");
+                System.out.println("End left side thread");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
