@@ -69,32 +69,60 @@ public class BulbBinarySearch {
             System.out.println("In bulbArray[" + i + "]: " + bulbArray[i]);
         }
 
-        // Instantiate counters c1 and c2
+        // Instantiate counters
+        // Number of threads
         Counter numThread = new Counter();
-        Counter c2 = new Counter();
+        // BulbArray size (static array)
+        Counter sizePositionArray = new Counter();
         // Instantiate positionArray. Keeps track of position of defective bulbs.
         int positionArray[] = new int[arraySize];
 
         // Start main thread.
         Thread mainT = new Thread(new Runnable() {
             public void run() {
-                FindDefective(positionArray, bulbArray, 0, numThread, c2);
+                FindDefective(positionArray, bulbArray, 0, numThread, sizePositionArray);
                 numThread.increment();
 
             }
         });
+        System.out.println("Start main thread");
         mainT.start();
         try {
             mainT.join();
+            System.out.println("End main thread");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         // Print out the positions of defective bulbs (0s).
         System.out.println("==============================================");
-        System.out.println("OUTPUT");
+        System.out.println("UNORDERED OUTPUT");
         System.out.println("==============================================");
-        for (int i = 0; i < c2.getcount(); i++) {
+        for (int i = 0; i < sizePositionArray.getcount(); i++) {
+            // Position is off-set by 1 because of example answer.
+            System.out.println("Position of defective lightbulb: " + (positionArray[i] + 1));
+        }
+        // Print out the number of threads used.
+        System.out.println("Number of Threads used: " + numThread.getcount());
+        System.out.println("==============================================");
+
+        // Bubble-sort the position array
+        for (int i = 0; i < sizePositionArray.getcount() - 1; i++) {
+            for (int j = 0; j < sizePositionArray.getcount() - i - 1; j++) {
+                if (positionArray[j] > positionArray[j + 1]) {
+                    // Swap positionArray[j+1] and positionArray[i]
+                    int foo = positionArray[j];
+                    positionArray[j] = positionArray[j + 1];
+                    positionArray[j + 1] = foo;
+                }
+            }
+        }
+
+        // Print out the positions of defective bulbs (0s) ascending order.
+        System.out.println("==============================================");
+        System.out.println("ORDERED OUPUT");
+        System.out.println("==============================================");
+        for (int i = 0; i < sizePositionArray.getcount(); i++) {
             // Position is off-set by 1 because of example answer.
             System.out.println("Position of defective lightbulb: " + (positionArray[i] + 1));
         }
@@ -103,7 +131,8 @@ public class BulbBinarySearch {
         System.out.println("==============================================");
     }
 
-    public static void FindDefective(int[] positionArray, int[] subBulbArray, int position, Counter c1, Counter numThread) {
+    public static void FindDefective(int[] positionArray, int[] subBulbArray, int position, Counter numThread,
+            Counter sizePositionArray) {
 
         // Print the bulbArray being analyzed on terminal.
         for (int i = 0; i < subBulbArray.length; i++) {
@@ -113,7 +142,7 @@ public class BulbBinarySearch {
         int defectiveExists = 1;
         for (int i = 0; i < subBulbArray.length; i++) {
             defectiveExists *= subBulbArray[i];
-            //if (subBulbArray[i] == 0) {System.out.println("no defective bulb"); return;}
+            // if (subBulbArray[i] == 0) {System.out.println("no defective bulb"); return;}
         }
 
         // Case: no 0s in the sub array.
@@ -125,9 +154,9 @@ public class BulbBinarySearch {
         else if (subBulbArray.length == 1 && defectiveExists == 0) {
             System.out.println("defective bulb found at position: " + position);
             // Set position of defective bulb in positionArray
-            positionArray[numThread.getcount()] = position;
+            positionArray[sizePositionArray.getcount()] = position;
             // Increment number of threads.
-            numThread.increment();
+            sizePositionArray.increment();
         }
         // Case: split into sub-arrays.
         else {
@@ -143,8 +172,8 @@ public class BulbBinarySearch {
             // Creation of left thread.
             Thread leftThread = new Thread(new Runnable() {
                 public void run() {
-                    c1.increment(); 
-                    FindDefective(positionArray, leftArr, position, c1, numThread);
+                    numThread.increment();
+                    FindDefective(positionArray, leftArr, position, numThread, sizePositionArray);
                 }
             });
             // Start of left thread.
@@ -161,8 +190,8 @@ public class BulbBinarySearch {
             // Creation of right thread.
             Thread rightThread = new Thread(new Runnable() {
                 public void run() {
-                    c1.increment();
-                    FindDefective(positionArray, rightArr, position + pivot, c1, numThread);
+                    numThread.increment();
+                    FindDefective(positionArray, rightArr, position + pivot, numThread, sizePositionArray);
                 }
             });
             // Start of right thread.
