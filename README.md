@@ -11,3 +11,4 @@ TA instructions: assume that the BulbArray is a 2^n, always divisible by 2.
 ## Customization  
 Path for Input.txt on Thomas' laptop.  
 C:\\Users\\etothra\\Workspace\\coen346_assignment1\\Input.txt  
+D:\Workspace\coen346_assignment1\Input.txt

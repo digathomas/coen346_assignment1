@@ -2,7 +2,7 @@ import java.io.*;
 
 //Write a recursive threading method to find the defective bulbs and the number of threads that have been created for this purpose
 
-public class BulbBinarySearch_old extends Thread {
+public class BulbBinarySearchWithoutThreading extends Thread {
 
     public static void main(String[] args) throws Exception {
 

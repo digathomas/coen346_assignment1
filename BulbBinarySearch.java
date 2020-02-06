@@ -8,7 +8,7 @@ public class BulbBinarySearch {
         // =====================================================
         // change the path to your corresponding Input.txt file.
         // =====================================================
-        File file = new File("C:\\Users\\etothra\\Workspace\\coen346_assignment1\\Input.txt");
+        File file = new File("D:\\Workspace\\coen346_assignment1\\Input.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String tempString = null;
 
